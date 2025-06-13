@@ -26,7 +26,7 @@ SPRING_DATASOURCE_PASSWORD=clave
 
 ## Instalación
 
-* git clone https://github.com/tu-usuario/proyecto-inspectores.git
+* git clone https://github.com/ceurrutia/inspectores-agc.git
 * cd Inspectores
 * ./mvnw spring-boot:run
 
