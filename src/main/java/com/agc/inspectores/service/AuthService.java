@@ -50,6 +50,7 @@ public class AuthService {
             return "Ya existe un usuario con ese email.";
         }
 
+
         // Crea nuevo usuario
         User user = new User();
         user.setUsername(dto.getUsername());
@@ -61,6 +62,27 @@ public class AuthService {
 
         userRepository.save(user);
         return "Usuario SUPERADMIN registrado correctamente.";
+    }
+
+    public String registerByRole(RegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            return "Ya existe un usuario con ese email.";
+        }
+
+        if (dto.getRole() == null) {
+            return "Debe especificar un rol.";
+        }
+
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setDni(dto.getDni());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(dto.getRole()); // El rol llega desde el front
+        user.setEnabled(true);
+
+        userRepository.save(user);
+        return "Usuario " + dto.getRole().name() + " registrado correctamente.";
     }
 
     public String initiatePasswordReset(String email) {

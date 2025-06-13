@@ -34,20 +34,38 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos (login, registro, etc)
-                        .requestMatchers("/auth/**").permitAll()
-                        // GET para inspectores abierto a publico
+                        // Vistas públicas
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/dashboard").permitAll()
+
+                        // API públicas
                         .requestMatchers(HttpMethod.GET, "/api/inspectores/**").permitAll()
-                        // CRUD para inspectores solo para ADMIN y SUPERADMIN
-                        .requestMatchers(HttpMethod.POST, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
-                        // Cualquier otro endpoint requiere autenticación
+
+                        // API protegidas
+                        .requestMatchers("/api/**").authenticated()
+
+                        // Vistas protegidas por rol
+                        .requestMatchers("/admin-dashboard").hasRole("ADMIN")
+                        .requestMatchers("/auth/admin/create").hasRole("SUPERADMIN")
+
+                        // Cualquier otra necesita estar autenticado
                         .anyRequest().authenticated()
                 )
-                // Stateless para JWT
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Agrega filtro JWT antes que el UsernamePasswordAuthenticationFilter
+                // Habilita formulario solo para vistas web
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .defaultSuccessUrl("/auth/dashboard", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/auth/login?logout")
+                        .permitAll()
+                )
+                //solo las APIs serán stateless
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                // JWT se aplica solo si hay token
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -71,3 +89,4 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
+

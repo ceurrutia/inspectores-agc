@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Dashboard</h1>
+<h2>Bienvenido Admin</h2>
+<p>Estás logueado como administrador.</p>
+
+<p sec:authorize="hasRole('SUPERADMIN')">
+    <a th:href="@{/auth/admin/create}">
+        <button>Crear nuevo usuario admin</button>
+    </a>
+</p>
+
+<p>Usuario logueado: <span sec:authentication="name"></span></p>
+<p>Rol del usuario: <span sec:authentication="principal.authorities"></span></p>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Cerrar sesión</button>
+</form>
+
+<h2>Listado de Inspectores</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>DNI</th>
+        <th>Area</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="inspector : ${inspectores}">
+        <td th:text="${inspector.id}">ID</td>
+        <td th:text="${inspector.nombre}">Nombre</td>
+        <td th:text="${inspector.apellido}">Apellido</td>
+        <td th:text="${inspector.dni}">DNI</td>
+        <td th:text="${inspector.area}">Area</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

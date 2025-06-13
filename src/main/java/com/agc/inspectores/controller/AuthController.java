@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.*;
         @Autowired
         private AuthService authService;
 
+        // Solo SUPERADMIN puede crear nuevos usuarios (ADMIN o SUPERADMIN)
+        @PreAuthorize("hasRole('SUPERADMIN')")
         @PostMapping("/register")
-        public ResponseEntity<String> registerSuperAdmin(@Valid @RequestBody RegisterDTO registerDTO) {
-            String result = authService.registerSuperAdmin(registerDTO);
+        public ResponseEntity<String> registerUserBySuperadmin(@Valid @RequestBody RegisterDTO registerDTO) {
+            // Role incluido en el DTO para decidir qué tipo de usuario creo
+            String result = authService.registerByRole(registerDTO);
             return ResponseEntity.ok(result);
         }
 
