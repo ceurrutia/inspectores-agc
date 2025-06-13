@@ -1,0 +1,8 @@
+package com.agc.inspectores.enums;
+
+public enum Area {
+    FISCALIZACION_Y_CONTROL,
+    SEGURIDAD_ALIMENTARIA,
+    HABILITACIONES_Y_PERMISOS,
+    FISCALIZACION_Y_CONTROL_DE_OBRAS
+}

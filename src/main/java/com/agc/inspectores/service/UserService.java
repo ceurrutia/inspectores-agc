@@ -1,0 +1,67 @@
+package com.agc.inspectores.service;
+
+import com.agc.inspectores.dto.UserDTO;
+import com.agc.inspectores.entity.User;
+import com.agc.inspectores.enums.Role;
+import com.agc.inspectores.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Crear usuario
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setDni(userDTO.getDni());
+        user.setRole(Role.ADMIN); // ojo, rol ADMIN, no SUPERADMIN
+        user.setEnabled(true);
+
+        // Encripta contraseña antes de guardar
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        User savedUser = userRepository.save(user);
+
+        // Crea DTO para retorno sin exponer la contraseña
+        UserDTO dto = new UserDTO();
+        dto.setId(savedUser.getId());
+        dto.setUsername(savedUser.getUsername());
+        dto.setEmail(savedUser.getEmail());
+        dto.setPassword(null);  // adios password
+        dto.setDni(savedUser.getDni());
+        dto.setRole(savedUser.getRole());
+        dto.setEnabled(savedUser.isEnabled());
+
+        return dto;
+    }
+
+    private UserDTO convertToDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setDni(user.getDni());
+        dto.setRole(user.getRole());
+        dto.setEnabled(user.isEnabled());
+        return dto;
+    }
+}
