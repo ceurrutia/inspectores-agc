@@ -1,51 +1,243 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- CSS personalizado-->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Dashboard</h1>
-<h2>Bienvenido Admin</h2>
-<p>Estás logueado como administrador.</p>
 
-<p sec:authorize="hasRole('SUPERADMIN')">
-    <a th:href="@{/auth/admin/create}">
-        <button>Crear nuevo usuario admin</button>
-    </a>
-</p>
+<!-- HEADER -->
+<div th:insert="~{fragments/header :: header}"></div>
 
-<p>Usuario logueado: <span sec:authentication="name"></span></p>
-<p>Rol del usuario: <span sec:authentication="principal.authorities"></span></p>
+<main class="container mt-5">
+    <!-- Buscador de inspectores por apellido -->
+    <form th:action="@{/auth/dashboard}" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="apellido" placeholder="Buscar por apellido...">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+    <!-- limpiar y volver a listado -->
+    <div th:if="${param.apellido}" class="mb-3">
+        <a th:href="@{/auth/dashboard}" class="btn btn-secondary">Volver al listado completo</a>
+    </div>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Cerrar sesión</button>
-</form>
+    <h2 class="mb-3">Listado de Inspectores</h2>
 
-<h2>Listado de Inspectores</h2>
+    <!-- crear nuevo inspector -->
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
+            + Agregar Inspector
+        </button>
+    </div>
+    <!--mensaje si no hay inspectores -->
+    <div th:if="${#lists.isEmpty(inspectores)}" class="col-12">
+        <div class="alert alert-warning text-center">
+            No se ha encontrado Inspector
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+        <div class="col" th:each="inspector : ${inspectores}">
+            <div class="card h-100">
+                <img th:src="${inspector.imagen}" class="card-img-top" alt="Imagen del inspector" style="object-fit: cover; height: 200px;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${inspector.nombre + ' ' + inspector.apellido}">Nombre Apellido</h5>
+                    <p class="card-text">
+                        <strong>DNI:</strong> <span th:text="${inspector.dni}">12345678</span><br>
+                        <strong>Área:</strong> <span th:text="${inspector.area.label}">Área</span>
+                    </p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#editModal__' + ${inspector.id}">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#deleteModal__' + ${inspector.id}">Eliminar</button>
+                </div>
+            </div>
 
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>DNI</th>
-        <th>Area</th>
+            <!-- Modal Editar -->
+            <div class="modal fade" th:id="'editModal__' + ${inspector.id}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form>
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Inspector</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="nombre" th:value="${inspector.nombre}" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" name="apellido" th:value="${inspector.apellido}" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">DNI</label>
+                                    <input type="text" name="dni" th:value="${inspector.dni}" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Área</label>
+                                    <input type="text" name="area" th:value="${inspector.area}" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Imagen (URL)</label>
+                                    <input type="text" name="imagen" th:value="${inspector.imagen}" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" th:attr="onclick='editarInspector(' + ${inspector.id} + ')'">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="inspector : ${inspectores}">
-        <td th:text="${inspector.id}">ID</td>
-        <td th:text="${inspector.nombre}">Nombre</td>
-        <td th:text="${inspector.apellido}">Apellido</td>
-        <td th:text="${inspector.dni}">DNI</td>
-        <td th:text="${inspector.area}">Area</td>
-    </tr>
-    </tbody>
-</table>
+            <!-- Modal Eliminar -->
+            <div class="modal fade" th:id="'deleteModal__' + ${inspector.id}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de que deseas eliminar al inspector <strong th:text="${inspector.nombre + ' ' + inspector.apellido}">Nombre</strong>?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" th:attr="onclick='eliminarInspector(' + ${inspector.id} + ')'">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Crear -->
+            <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="createForm">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Nuevo Inspector</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="nombre" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" name="apellido" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">DNI</label>
+                                    <input type="text" name="dni" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Área</label>
+                                    <input type="text" name="area" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Imagen (URL)</label>
+                                    <input type="text" name="imagen" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-success" onclick="crearInspector()">Crear</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div> <!-- end .col -->
+    </div>
+</main>
+
+<!-- FOOTER -->
+<div th:insert="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JS: lógica de edición y eliminación -->
+<script>
+    function editarInspector(id) {
+        const modal = document.getElementById('editModal__' + id);
+        const form = modal.querySelector('form');
+
+        const data = {
+            nombre: form.nombre.value,
+            apellido: form.apellido.value,
+            dni: form.dni.value,
+            area: form.area.value,
+            imagen: form.imagen.value
+        };
+
+        fetch(`/api/inspectores/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Error al editar el inspector.');
+            }
+        });
+    }
+
+    function eliminarInspector(id) {
+        fetch(`/api/inspectores/${id}`, {
+            method: 'DELETE'
+        }).then(res => {
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Error al eliminar el inspector.');
+            }
+        });
+    }
+
+    function crearInspector() {
+    const form = document.getElementById('createForm');
+
+    const data = {
+        nombre: form.nombre.value,
+        apellido: form.apellido.value,
+        dni: form.dni.value,
+        area: form.area.value,
+        imagen: form.imagen.value
+    };
+
+    fetch('/api/inspectores', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(res => {
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert('Error al crear el inspector.');
+        }
+    });
+}
+
+</script>
 
 </body>
 </html>

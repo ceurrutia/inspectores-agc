@@ -47,4 +47,5 @@ import org.springframework.web.bind.annotation.*;
             String result = authService.resetPassword(resetDTO);
             return ResponseEntity.ok(result);
         }
+        
     }

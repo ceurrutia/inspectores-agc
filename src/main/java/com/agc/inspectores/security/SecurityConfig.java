@@ -34,21 +34,24 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Vistas públicas
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/dashboard").permitAll()
+                                // Vistas públicas
+                                .requestMatchers("/auth/login").permitAll()
 
-                        // API públicas
-                        .requestMatchers(HttpMethod.GET, "/api/inspectores/**").permitAll()
+                                // Permisos para inspectores
+                                .requestMatchers(HttpMethod.GET, "/api/inspectores/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
 
-                        // API protegidas
-                        .requestMatchers("/api/**").authenticated()
+                                 // Otros endpoints
+                                .requestMatchers("/api/**").authenticated()
 
-                        // Vistas protegidas por rol
-                        .requestMatchers("/admin-dashboard").hasRole("ADMIN")
-                        .requestMatchers("/auth/admin/create").hasRole("SUPERADMIN")
+                                // Vistas protegidas por rol
+                                .requestMatchers("/admin-dashboard").hasRole("ADMIN")
+                                .requestMatchers("/auth/admin/create").hasRole("SUPERADMIN")
 
-                        // Cualquier otra necesita estar autenticado
-                        .anyRequest().authenticated()
+                                // Cualquier otra necesita estar autenticado
+                                .anyRequest().authenticated()
                 )
                 // Habilita formulario solo para vistas web
                 .formLogin(form -> form

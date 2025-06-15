@@ -1,0 +1,33 @@
+<!-- src/main/resources/templates/fragments/header.html -->
+<div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <header class="bg-light py-3 border-bottom text-dark">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+
+      <!-- Logo e info institucional -->
+      <div class="d-flex align-items-center mb-3 mb-md-0">
+        <img src="https://alimentos.agcontrol.gob.ar/Content/img/agc-header.png" alt="Logo GCBA" height="40" class="me-2" />
+
+      </div>
+
+      <!-- Información del usuario, solo si está logueado -->
+      <div class="text-dark" sec:authorize="isAuthenticated()">
+        <p class="mb-1">Hola, <strong><span sec:authentication="name"></span></strong></p>
+        <p class="mb-1">
+          Estas logueado como:
+          <strong th:if="${#authorization.expression('hasRole(''SUPERADMIN'')')}">Superadmin</strong>
+          <strong th:if="${#authorization.expression('hasRole(''ADMIN'')') and !#authorization.expression('hasRole(''SUPERADMIN'')')}">Admin</strong>
+          <strong th:if="${#authorization.expression('hasRole(''USER'')') and !#authorization.expression('hasRole(''ADMIN'')') and !#authorization.expression('hasRole(''SUPERADMIN'')')}">Usuario</strong>
+        </p>
+
+        <div class="mb-2" sec:authorize="hasRole('SUPERADMIN')">
+          <a th:href="@{/auth/admin/create}" class="btn btn-sm btn-success">Crear nuevo usuario admin</a>
+        </div>
+
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="btn btn-sm btn-danger">Cerrar sesión</button>
+        </form>
+      </div>
+
+    </div>
+  </header>
+</div>

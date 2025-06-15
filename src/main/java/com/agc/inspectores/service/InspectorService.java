@@ -13,6 +13,13 @@ public class InspectorService {
 
     private final InspectorRepository inspectorRepository;
 
+    public List<InspectorDTO> buscarPorApellido(String apellido) {
+        return inspectorRepository.findByApellidoContainingIgnoreCase(apellido)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public InspectorService(InspectorRepository inspectorRepository) {
         this.inspectorRepository = inspectorRepository;
     }

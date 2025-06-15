@@ -43,15 +43,34 @@ public class AuthService {
         return jwtUtils.generateToken(user);
     }
 
+    private boolean isValidEmail(String email) {
+        // Valida que no sea nulo, que tenga un @ y que termine en un dominio válido (por ejemplo .com, .org, .net, .com.ar, etc)
+        return email != null && email.matches("^[^@\\s]+@[^@\\s]+\\.[a-zA-Z]{2,}$");
+    }
+
+    private boolean isStrongPassword(String password) {
+        return password != null && password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+    }
+
 
     public String registerSuperAdmin(RegisterDTO dto) {
-        // Validar si el email existe
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            return "Debe ingresar un email.";
+        }
+        System.out.println("Email recibido en registerSuperAdmin: " + dto.getEmail());
+
         if (userRepository.existsByEmail(dto.getEmail())) {
             return "Ya existe un usuario con ese email.";
         }
 
+        if (!isValidEmail(dto.getEmail())) {
+            return "El email no tiene un formato válido. Debe contener '@' y un dominio válido.";
+        }
 
-        // Crea nuevo usuario
+        if (!isStrongPassword(dto.getPassword())) {
+            return "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.";
+        }
+
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
@@ -65,8 +84,21 @@ public class AuthService {
     }
 
     public String registerByRole(RegisterDTO dto) {
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            return "Debe ingresar un email.";
+        }
+        System.out.println("Email recibido en registerByRole: " + dto.getEmail());
+
         if (userRepository.existsByEmail(dto.getEmail())) {
             return "Ya existe un usuario con ese email.";
+        }
+
+        if (!isValidEmail(dto.getEmail())) {
+            return "El email no tiene un formato válido. Debe contener '@' y un dominio válido.";
+        }
+
+        if (!isStrongPassword(dto.getPassword())) {
+            return "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.";
         }
 
         if (dto.getRole() == null) {
@@ -78,7 +110,7 @@ public class AuthService {
         user.setEmail(dto.getEmail());
         user.setDni(dto.getDni());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(dto.getRole()); // El rol llega desde el front
+        user.setRole(dto.getRole());
         user.setEnabled(true);
 
         userRepository.save(user);
@@ -89,7 +121,6 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email no encontrado"));
 
-        // Genera token
         String token = UUID.randomUUID().toString();
         user.setResetToken(token);
         userRepository.save(user);
@@ -107,5 +138,4 @@ public class AuthService {
 
         return "Contraseña actualizada correctamente.";
     }
-
 }
