@@ -8,6 +8,7 @@ Este sistema gestiona los usuarios del sistema y los inspectores de diversas ár
 * Spring Security + JWT
 * JPA + Hibernate
 * MySQL
+* Thymeleaf (frontend de superamin, admin)
 * Maven
 * Dotenv (configuraciones)
 
@@ -18,11 +19,11 @@ Este sistema gestiona los usuarios del sistema y los inspectores de diversas ár
 
 ## Archivo .env con:
 
-JWT_SECRET=tu_clave
-JWT_EXPIRATION=3600000
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nombre_bd
-SPRING_DATASOURCE_USERNAME=usuario
-SPRING_DATASOURCE_PASSWORD=clave
+- JWT_SECRET=tu_clave
+- JWT_EXPIRATION=3600000
+- SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nombre_bd
+- SPRING_DATASOURCE_USERNAME=usuario
+- SPRING_DATASOURCE_PASSWORD=clave
 
 ## Instalación
 
@@ -35,12 +36,6 @@ SPRING_DATASOURCE_PASSWORD=clave
 El login se realiza mediante JWT. Para autenticarse:
 Endpoint: POST /auth/login
 
-### Body:
-{
-"username": "admin",
-"password": "123456"
-}
-
 * Devuelve un token que debe usarse en los headers:
 Authorization: Bearer {token}
 
@@ -48,7 +43,7 @@ Authorization: Bearer {token}
 
 ## Usuarios
 
-* POST /auth/register - Crear SUPERADMIN (solo una vez)
+* POST /auth/register - Crear SUPERADMIN 
 * POST /auth/register-admin - Crear ADMIN (requiere token SUPERADMIN)
 
 ## Roles
@@ -82,6 +77,7 @@ String imagen; // URL o base64
 * SEGURIDAD_ALIMENTARIA
 * HABILITACIONES_Y_PERMISOS
 * FISCALIZACION_Y_CONTROL_OBRAS
+* UCA
 
 ## Frontend
 
@@ -106,6 +102,5 @@ inspectores/
 
 ## Futuras mejoras
 
-* Agregar filtros por área
 * Agregar paginación
 * Subida de imagen real

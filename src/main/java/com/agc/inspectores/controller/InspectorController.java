@@ -43,20 +43,17 @@ public class InspectorController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
     public ResponseEntity<InspectorDTO> update(@PathVariable Long id, @RequestBody InspectorDTO dto) {
-        // Log para ver el ID y el DTO recibido
+        // Ver el ID y el DTO recibido
         System.out.println("InspectorController - Recibida solicitud PUT para actualizar inspector ID: " + id);
         System.out.println("InspectorController - DTO recibido: " + dto);
-
-        // Agregamos un try-catch para capturar cualquier excepción antes de que Spring la convierta en 500 genérico
         try {
             return inspectorService.update(id, dto)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
-            // Loguear el error completo para un diagnóstico preciso
             System.err.println("InspectorController - Error al intentar actualizar inspector ID: " + id + ". Error: " + e.getMessage());
-            e.printStackTrace(); // Imprime la traza completa en la consola
-            return ResponseEntity.internalServerError().build(); // Devuelve un 500 explícito
+            e.printStackTrace(); // Imprime la traza completa
+            return ResponseEntity.internalServerError().build(); // Devuelve 500
         }
     }
 

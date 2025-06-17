@@ -1,4 +1,4 @@
-# 📋 Documento de Requerimientos - Sistema de Gestión de Inspectores
+# Documento de Requerimientos - Sistema de Gestión de Inspectores
 
 ## Objetivo
 Desarrollar una API REST que permita gestionar usuarios e inspectores. La API deberá implementar roles de acceso, autenticación con JWT y soporte para operaciones CRUD según el tipo de usuario.
@@ -73,6 +73,7 @@ Se utilizan DTOs para entrada/salida de datos en `Inspector`, protegiendo la cap
 - Spring Boot
 - Spring Security
 - JWT (jjwt)
+- Thymeleaf
 - Maven
 - MySQL (o cualquier base de datos compatible con JPA)
 - Postman (para testing)
