@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,5 +64,44 @@ public class UserService {
         dto.setRole(user.getRole());
         dto.setEnabled(user.isEnabled());
         return dto;
+    }
+
+    public UserDTO getUserById(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            return convertToDTO(userOpt.get());
+        } else {
+            throw new RuntimeException("Usuario no encontrado con id: " + id);
+        }
+    }
+
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setUsername(userDTO.getUsername());
+            user.setEmail(userDTO.getEmail());
+            user.setDni(userDTO.getDni());
+            user.setRole(userDTO.getRole());
+            user.setEnabled(userDTO.isEnabled());
+
+            // Si viene contraseña y no está vacía, la actualizamos
+            if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            }
+
+            User updatedUser = userRepository.save(user);
+            return convertToDTO(updatedUser);
+        } else {
+            throw new RuntimeException("Usuario no encontrado con id: " + id);
+        }
+    }
+
+    public void deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Usuario no encontrado con id: " + id);
+        }
     }
 }

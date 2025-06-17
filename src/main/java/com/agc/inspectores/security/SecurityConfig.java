@@ -56,7 +56,7 @@ public class SecurityConfig {
                 // Habilita formulario solo para vistas web
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/auth/dashboard", true)
+                        .defaultSuccessUrl("/auth/redireccion", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

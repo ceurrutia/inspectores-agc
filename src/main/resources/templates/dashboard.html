@@ -5,39 +5,31 @@
     <meta charset="UTF-8">
     <title>Dashboard</title>
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- CSS personalizado-->
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
 
-<!-- HEADER -->
 <div th:insert="~{fragments/header :: header}"></div>
 
 <main class="container mt-5">
-    <!-- Buscador de inspectores por apellido -->
     <form th:action="@{/auth/dashboard}" method="get" class="mb-4">
         <div class="input-group">
             <input type="text" class="form-control" name="apellido" placeholder="Buscar por apellido...">
             <button type="submit" class="btn btn-primary">Buscar</button>
         </div>
     </form>
-    <!-- limpiar y volver a listado -->
     <div th:if="${param.apellido}" class="mb-3">
         <a th:href="@{/auth/dashboard}" class="btn btn-secondary">Volver al listado completo</a>
     </div>
 
     <h2 class="mb-3">Listado de Inspectores</h2>
 
-    <!-- crear nuevo inspector -->
     <div class="d-flex justify-content-end mb-4">
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
             + Agregar Inspector
         </button>
     </div>
-    <!--mensaje si no hay inspectores -->
     <div th:if="${#lists.isEmpty(inspectores)}" class="col-12">
         <div class="alert alert-warning text-center">
             No se ha encontrado Inspector
@@ -51,24 +43,32 @@
                     <h5 class="card-title" th:text="${inspector.nombre + ' ' + inspector.apellido}">Nombre Apellido</h5>
                     <p class="card-text">
                         <strong>DNI:</strong> <span th:text="${inspector.dni}">12345678</span><br>
-                        <strong>Área:</strong> <span th:text="${inspector.area.label}">Área</span>
+                        <strong>Área:</strong> <span th:text="${inspector.area != null ? inspector.area.label : 'N/A'}">Área</span>
                     </p>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#editModal__' + ${inspector.id}">Editar</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#editModal__' + ${inspector.id}"
+                            th:data-inspector-id="${inspector.id}"
+                            th:data-inspector-nombre="${inspector.nombre}"
+                            th:data-inspector-apellido="${inspector.apellido}"
+                            th:data-inspector-dni="${inspector.dni}"
+                            th:data-inspector-area="${inspector.area != null ? inspector.area.name() : ''}"
+                            th:data-inspector-imagen="${inspector.imagen}"
+                            onclick="fillEditModal(this)">
+                        Editar
+                    </button>
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#deleteModal__' + ${inspector.id}">Eliminar</button>
                 </div>
             </div>
 
-            <!-- Modal Editar -->
             <div class="modal fade" th:id="'editModal__' + ${inspector.id}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Editar Inspector</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                            </div>
+                        <form th:id="'editForm__' + ${inspector.id}">
+                            <input type="hidden" name="id" th:value="${inspector.id}" /> <div class="modal-header">
+                            <h5 class="modal-title">Editar Inspector</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label class="form-label">Nombre</label>
@@ -84,7 +84,13 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Área</label>
-                                    <input type="text" name="area" th:value="${inspector.area}" class="form-control" required />
+                                    <select name="area" class="form-select" required>
+                                        <option value="">Seleccione un área</option> <option th:each="areaOption : ${areas}"
+                                                                                             th:value="${areaOption.name()}"
+                                                                                             th:text="${areaOption.label}"
+                                                                                             th:selected="${inspector.area != null and inspector.area.name() == areaOption.name()}">
+                                    </option>
+                                    </select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Imagen (URL)</label>
@@ -93,14 +99,13 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-primary" th:attr="onclick='editarInspector(' + ${inspector.id} + ')'">Guardar cambios</button>
+                                <button type="button" class="btn btn-primary" th:onclick="'editarInspector(' + ${inspector.id} + ')'">Guardar cambios</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal Eliminar -->
             <div class="modal fade" th:id="'deleteModal__' + ${inspector.id}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -118,70 +123,96 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Modal Crear -->
-            <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form id="createForm">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Nuevo Inspector</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombre</label>
-                                    <input type="text" name="nombre" class="form-control" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Apellido</label>
-                                    <input type="text" name="apellido" class="form-control" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">DNI</label>
-                                    <input type="text" name="dni" class="form-control" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Área</label>
-                                    <input type="text" name="area" class="form-control" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Imagen (URL)</label>
-                                    <input type="text" name="imagen" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-success" onclick="crearInspector()">Crear</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-
-        </div> <!-- end .col -->
+        </div>
     </div>
 </main>
 
-<!-- FOOTER -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="createForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo Inspector</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" name="apellido" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">DNI</label>
+                        <input type="text" name="dni" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="crearArea" class="form-label">Área</label>
+                        <select id="crearArea" name="area" class="form-select" required>
+                            <option value="">Seleccione un área</option> <option th:each="area : ${areas}" th:value="${area.name()}" th:text="${area.label}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen (URL)</label>
+                        <input type="text" name="imagen" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="crearInspector(event)">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div th:insert="~{fragments/footer :: footer}"></div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- JS: lógica de edición y eliminación -->
 <script>
-    function editarInspector(id) {
+    // Función para llenar el modal de edición cuando se hace clic en "Editar"
+    function fillEditModal(button) {
+        const id = button.getAttribute('data-inspector-id');
+        const nombre = button.getAttribute('data-inspector-nombre');
+        const apellido = button.getAttribute('data-inspector-apellido');
+        const dni = button.getAttribute('data-inspector-dni');
+        const area = button.getAttribute('data-inspector-area'); // Nombre del enum (ej. "UCA")
+        const imagen = button.getAttribute('data-inspector-imagen');
+
         const modal = document.getElementById('editModal__' + id);
         const form = modal.querySelector('form');
 
+        form.elements.nombre.value = nombre;
+        form.elements.apellido.value = apellido;
+        form.elements.dni.value = dni;
+        form.elements.imagen.value = imagen;
+
+        // Seleccionar la opción correcta en el select de área
+        // Asegurarse de que el valor 'area' del inspector coincida con el 'value' de una opción
+        const areaSelect = form.elements.area;
+        for (let i = 0; i < areaSelect.options.length; i++) {
+            if (areaSelect.options[i].value === area) {
+                areaSelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+
+    function editarInspector(id) {
+        const modal = document.getElementById('editModal__' + id);
+        const form = document.getElementById('editForm__' + id);
+
         const data = {
-            nombre: form.nombre.value,
-            apellido: form.apellido.value,
-            dni: form.dni.value,
-            area: form.area.value,
-            imagen: form.imagen.value
+            nombre: form.elements.nombre.value,
+            apellido: form.elements.apellido.value,
+            dni: form.elements.dni.value,
+            // Convertir a mayúsculas y quitar espacios antes de enviar para coincidir con el enum
+            area: form.elements.area.value.toUpperCase().trim(),
+            imagen: form.elements.imagen.value
         };
 
         fetch(`/api/inspectores/${id}`, {
@@ -192,10 +223,19 @@
             body: JSON.stringify(data)
         }).then(res => {
             if (res.ok) {
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
                 location.reload();
             } else {
-                alert('Error al editar el inspector.');
+                res.json().then(errorData => {
+                    alert('Error al editar el inspector: ' + (errorData.message || 'Error desconocido.'));
+                }).catch(() => {
+                    alert('Error al editar el inspector. Revisa la consola del navegador para más detalles.');
+                });
             }
+        }).catch(error => {
+            console.error('Error en la solicitud (editarInspector):', error);
+            alert('Error de red o al enviar la solicitud.');
         });
     }
 
@@ -204,39 +244,60 @@
             method: 'DELETE'
         }).then(res => {
             if (res.ok) {
+                const modal = document.getElementById('deleteModal__' + id);
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
                 location.reload();
             } else {
-                alert('Error al eliminar el inspector.');
+                res.json().then(errorData => {
+                    alert('Error al eliminar el inspector: ' + (errorData.message || 'Error desconocido.'));
+                }).catch(() => {
+                    alert('Error al eliminar el inspector. Revisa la consola del navegador para más detalles.');
+                });
             }
+        }).catch(error => {
+            console.error('Error en la solicitud (eliminarInspector):', error);
+            alert('Error de red o al enviar la solicitud.');
         });
     }
 
-    function crearInspector() {
-    const form = document.getElementById('createForm');
+    function crearInspector(event) {
+        event.preventDefault(); // Evita el envío por defecto del formulario
 
-    const data = {
-        nombre: form.nombre.value,
-        apellido: form.apellido.value,
-        dni: form.dni.value,
-        area: form.area.value,
-        imagen: form.imagen.value
-    };
+        const form = document.getElementById('createForm');
 
-    fetch('/api/inspectores', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }).then(res => {
-        if (res.ok) {
-            location.reload();
-        } else {
-            alert('Error al crear el inspector.');
-        }
-    });
-}
+        const data = {
+            nombre: form.elements.nombre.value,
+            apellido: form.elements.apellido.value,
+            dni: form.elements.dni.value,
+            // Convertir a mayúsculas y quitar espacios antes de enviar
+            area: form.elements.area.value.toUpperCase().trim(),
+            imagen: form.elements.imagen.value
+        };
 
+        fetch('/api/inspectores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => {
+            if (res.ok) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createModal'));
+                if (modal) modal.hide();
+                location.reload();
+            } else {
+                res.json().then(errorData => {
+                    alert('⚠️ Error al crear el inspector: ' + (errorData.message || 'Error desconocido.'));
+                }).catch(() => {
+                    alert('⚠️ Error al crear el inspector. Revisa la consola del navegador y los logs del servidor para más detalles.');
+                });
+            }
+        }).catch(error => {
+            console.error('Error en la solicitud (crearInspector):', error);
+            alert('⚠️ Error de red o al enviar la solicitud.');
+        });
+    }
 </script>
 
 </body>

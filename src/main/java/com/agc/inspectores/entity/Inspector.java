@@ -15,6 +15,7 @@ public class Inspector {
     private String dni;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private Area area;
 
     private String imagen;
