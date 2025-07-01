@@ -51,11 +51,11 @@ public class AuthViewController {
             return "redirect:/auth/dashboard-superadmin";
         }
 
-        // Si no es superadmin, va al dashboard normal
+        // Si no es superadmin, va al dashboard normal de admin
         return "redirect:/auth/dashboard";
     }
 
-    // Dashboard con búsqueda por apellido
+    //Dashboard con búsqueda por apellido
     @GetMapping("/dashboard")
     public String dashboard(@RequestParam(value = "apellido", required = false) String apellido, Model model) {
         if (apellido != null && !apellido.trim().isEmpty()) {
@@ -68,35 +68,40 @@ public class AuthViewController {
     }
 
 
-    // Mostrar formulario para crear ADMIN (solo SUPERADMIN)
+    // Muestra el formulario para crear ADMIN (solo SUPERADMIN)
     @GetMapping("/admin/create")
-    @PreAuthorize("hasRole('SUPERADMIN')")
     public String showAdminRegistrationForm(Model model) {
+        // Verifica si el usuario actual es SUPERADMIN
+        var auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+
+        // Si no es SUPERADMIN, redirige a la página not-allowed
+        if (auth == null || !auth.isAuthenticated() || auth.getAuthorities().stream()
+                .noneMatch(granted -> granted.getAuthority().equals("ROLE_SUPERADMIN"))) {
+            return "not-allowed"; // Retorna el nombre de la plantilla not-allowed.html
+        }
+
         model.addAttribute("user", new RegisterDTO());
         return "register-admin";
     }
 
-    // Procesar formcrear ADMIN (solo para SUPERADMIN)
+    // PROCESA EL FORMULARIO DE CREACIÓN DE ADMIN/SUPERADMIN
     @PostMapping("/admin/create")
     @PreAuthorize("hasRole('SUPERADMIN')")
-    public String registerUserBySuperadminForm(@ModelAttribute("user") RegisterDTO registerDTO,
-                                               Model model) {
-
-        String resultado = authService.registerByRole(registerDTO);
-
-        // Si hubo error, mostrarlo en la misma vista
-        if (!resultado.startsWith("Usuario")) {
-            model.addAttribute("error", resultado); // pasamos el mensaje al HTML
-            model.addAttribute("user", registerDTO); // mantiene los datos del form
-            return "register-admin"; // vuelve al formulario
+    public String processAdminRegistrationForm(@ModelAttribute("user") RegisterDTO registerDTO,
+                                               RedirectAttributes redirectAttributes) {
+        try {
+            String result = authService.registerByRole(registerDTO);
+            redirectAttributes.addFlashAttribute("success", result); // Mensaje de éxito
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al registrar usuario: " + e.getMessage()); // Mensaje de error
+            return "redirect:/auth/admin/create";
         }
-
-        //ok,aldashboard
-        return "redirect:/auth/dashboard-superadmin";
+        return "redirect:/auth/dashboard-superadmin"; //dirige al dashboard de superadmin, ojo
     }
 
-    //Metodos para editar o eliminar usuarios para que los levante thymeleaf
 
+    //metodos para editar o eliminar usuarios para que los levante thymeleaf
     @PostMapping("/admin/edit/{id}")
     @PreAuthorize("hasRole('SUPERADMIN')")
     public String editarUsuario(@PathVariable Long id,
@@ -122,5 +127,11 @@ public class AuthViewController {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
         }
         return "redirect:/auth/dashboard-superadmin";
+    }
+
+    // ruta al no permitido
+    @GetMapping("/not-allowed")
+    public String accesoDenegado() {
+        return "not-allowed";
     }
 }

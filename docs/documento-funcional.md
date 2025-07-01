@@ -45,11 +45,13 @@ Desarrollar un MVP de API que contemple:
 - Realizar operaciones CRUD sobre roles: SUPERADMIN, ADMIN.
 - Eliminar cuentas.
 - Realizar operaciones CRUD sobre inspectores.
+- Descargar listado de inspectores en .csv
 
 ### Usuario ADMIN
 
 **Podrá:**
 - Administrar inspectores: crear, modificar y eliminar.
+- Descargar listado de inspectores en .csv
 
 **No podrá:**
 - Eliminar su cuenta.

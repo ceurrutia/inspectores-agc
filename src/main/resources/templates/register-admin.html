@@ -22,7 +22,7 @@
     <span th:text="${error}"></span>
   </div>
 
-  <!-- ALERTA EMAIL YA EXISTE -->
+  <!-- SI ALERTA EMAIL YA EXISTE -->
   <div id="email-exists-alert" class="alert alert-warning d-none" role="alert">
     Ya existe un usuario con ese email.
   </div>
@@ -72,7 +72,7 @@
   </form>
 </div>
 
-<!-- Bootstrap + JS AJAX + Validación -->
+<!-- Bootstrap + AJAX + Validación -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // Validación de Bootstrap
@@ -90,7 +90,7 @@
       });
   })();
 
-  // AJAX para verificar si el email ya está registrado
+  // Verificar si el email ya está registrado
   const emailInput = document.getElementById('email');
   const emailAlert = document.getElementById('email-exists-alert');
   const submitBtn = document.getElementById('submitBtn');
