@@ -45,8 +45,7 @@
                     <h5 class="card-title" th:text="${inspector.nombre + ' ' + inspector.apellido}">Nombre Apellido</h5>
                     <p class="card-text">
                         <strong>DNI:</strong> <span th:text="${inspector.dni}">12345678</span><br>
-                        <strong>Área:</strong> <span th:text="${inspector.area != null ? inspector.area.label : 'N/A'}">Área</span>
-                    </p>
+                        <strong>Área:</strong> <span th:text="${inspector.area != null ? inspector.area.label : 'N/A'}">Área</span><br> <strong>Función:</strong> <span th:text="${inspector.funcion != null ? inspector.funcion.label : 'N/A'}">Función</span> </p>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" th:attr="data-bs-target='#editModal__' + ${inspector.id}"
@@ -55,7 +54,7 @@
                             th:data-inspector-apellido="${inspector.apellido}"
                             th:data-inspector-dni="${inspector.dni}"
                             th:data-inspector-area="${inspector.area != null ? inspector.area.name() : ''}"
-                            th:data-inspector-imagen="${inspector.imagen}"
+                            th:data-inspector-funcion="${inspector.funcion != null ? inspector.funcion.name() : ''}" th:data-inspector-imagen="${inspector.imagen}"
                             onclick="fillEditModal(this)">
                         Editar
                     </button>
@@ -91,6 +90,15 @@
                                                                                              th:value="${areaOption.name()}"
                                                                                              th:text="${areaOption.label}"
                                                                                              th:selected="${inspector.area != null and inspector.area.name() == areaOption.name()}">
+                                    </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Función</label>
+                                    <select name="funcion" class="form-select" required> <option value="">Seleccione una función</option> <option th:each="funcionOption : ${funciones}"
+                                                                                                                                                  th:value="${funcionOption.name()}"
+                                                                                                                                                  th:text="${funcionOption.label}"
+                                                                                                                                                  th:selected="${inspector.funcion != null and inspector.funcion.name() == funcionOption.name()}">
                                     </option>
                                     </select>
                                 </div>
@@ -157,6 +165,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label for="crearFuncion" class="form-label">Función</label>
+                        <select id="crearFuncion" name="funcion" class="form-select" required> <option value="">Seleccione una función</option> <option th:each="funcion : ${funciones}" th:value="${funcion.name()}" th:text="${funcion.label}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Imagen (URL)</label>
                         <input type="text" name="imagen" class="form-control" />
                     </div>
@@ -202,7 +215,8 @@
         const nombre = button.getAttribute('data-inspector-nombre');
         const apellido = button.getAttribute('data-inspector-apellido');
         const dni = button.getAttribute('data-inspector-dni');
-        const area = button.getAttribute('data-inspector-area'); // Nombre del enum (ej. "UCA")
+        const area = button.getAttribute('data-inspector-area');
+        const funcion = button.getAttribute('data-inspector-funcion');
         const imagen = button.getAttribute('data-inspector-imagen');
 
         const modal = document.getElementById('editModal__' + id);
@@ -213,10 +227,19 @@
         form.elements.dni.value = dni;
         form.elements.imagen.value = imagen;
 
+        // Rellenar campo de Área
         const areaSelect = form.elements.area;
         for (let i = 0; i < areaSelect.options.length; i++) {
             if (areaSelect.options[i].value === area) {
                 areaSelect.selectedIndex = i;
+                break;
+            }
+        }
+        // Rellenar campo de Función
+        const funcionSelect = form.elements.funcion;
+        for (let i = 0; i < funcionSelect.options.length; i++) {
+            if (funcionSelect.options[i].value === funcion) {
+                funcionSelect.selectedIndex = i;
                 break;
             }
         }
@@ -231,6 +254,7 @@
             apellido: form.elements.apellido.value,
             dni: form.elements.dni.value,
             area: form.elements.area.value.toUpperCase().trim(),
+            funcion: form.elements.funcion.value.toUpperCase().trim(),
             imagen: form.elements.imagen.value
         };
 
@@ -316,6 +340,7 @@
             apellido: form.elements.apellido.value,
             dni: form.elements.dni.value,
             area: form.elements.area.value.toUpperCase().trim(),
+            funcion: form.elements.funcion.value.toUpperCase().trim(),
             imagen: form.elements.imagen.value
         };
 

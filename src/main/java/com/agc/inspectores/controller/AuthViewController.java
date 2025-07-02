@@ -3,6 +3,7 @@ package com.agc.inspectores.controller;
 import com.agc.inspectores.dto.RegisterDTO;
 import com.agc.inspectores.dto.UserDTO;
 import com.agc.inspectores.enums.Area;
+import com.agc.inspectores.enums.Funcion;
 import com.agc.inspectores.service.AuthService;
 import com.agc.inspectores.service.InspectorService;
 import com.agc.inspectores.service.UserService;
@@ -64,6 +65,7 @@ public class AuthViewController {
             model.addAttribute("inspectores", inspectorService.getAll());
         }
         model.addAttribute("areas", Area.values());
+        model.addAttribute("funciones", Funcion.values());
         return "dashboard";
     }
 

@@ -1,8 +1,8 @@
 # Buscador de Inspectores - Agencia Gubernamental de Control
 
 **Requerimientos Funcionales**  
-**Fecha:** 18/06/2025  
-**Versión:** 1.0  
+**Fecha:** 2/07/2025  
+**Versión:** 1.2  
 **Autor:** Cecilia Urrutia
 
 ---

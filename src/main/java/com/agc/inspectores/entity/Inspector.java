@@ -2,6 +2,7 @@ package com.agc.inspectores.entity;
 
 
 import com.agc.inspectores.enums.Area;
+import com.agc.inspectores.enums.Funcion;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,10 @@ public class Inspector {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
+    private Funcion funcion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private Area area;
 
     private String imagen;
@@ -25,21 +30,23 @@ public class Inspector {
     }
 
     // constructor con parametros
-    public Inspector(Long id, String nombre, String apellido, String dni, Area area, String imagen) {
+    public Inspector(Long id, String nombre, String apellido, String dni, Area area, Funcion funcion, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
         this.area = area;
+        this.funcion = funcion;
         this.imagen = imagen;
     }
     //construcotr sin id para que lo tome el dto
 
-    public Inspector(String nombre, String apellido, String dni, Area area, String imagen) {
+    public Inspector(String nombre, String apellido, String dni, Area area, Funcion funcion, String imagen) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
         this.area = area;
+        this.funcion = funcion;
         this.imagen = imagen;
     }
 
@@ -83,6 +90,14 @@ public class Inspector {
 
     public void setArea(Area area) {
         this.area = area;
+    }
+
+    public Funcion getFuncion() {
+        return funcion;
+    }
+
+    public void setFuncion(Funcion funcion) {
+        this.funcion = funcion;
     }
 
     public String getImagen() {

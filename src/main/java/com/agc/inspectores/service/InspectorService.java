@@ -43,6 +43,7 @@ public class InspectorService {
             inspector.setApellido(dto.getApellido());
             inspector.setDni(dto.getDni());
             inspector.setArea(dto.getArea());
+            inspector.setFuncion(dto.getFuncion());
             inspector.setImagen(dto.getImagen());
             return toDTO(inspectorRepository.save(inspector));
         });
@@ -64,6 +65,7 @@ public class InspectorService {
                 inspector.getApellido(),
                 inspector.getDni(),
                 inspector.getArea(),
+                inspector.getFuncion(),
                 inspector.getImagen()
         );
     }
@@ -74,6 +76,7 @@ public class InspectorService {
                 dto.getApellido(),
                 dto.getDni(),
                 dto.getArea(),
+                dto.getFuncion(),
                 dto.getImagen()
         );
     }

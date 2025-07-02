@@ -82,17 +82,18 @@ public class InspectorController {
         writer.write('\ufeff'); // BOM para Excel
 
         // Encabezado CSV
-        writer.println("ID,Nombre,Apellido,DNI,Área");
+        writer.println("ID,Nombre,Apellido,DNI,Área, Funcion");
 
         // Datos
         for (InspectorDTO inspector : inspectores) {
             writer.printf(
-                    "%s,%s,%s,%s,%s%n",
+                    "%s,%s,%s,%s,%s,%s%n",
                     String.valueOf(inspector.getId()),
                     inspector.getNombre(),
                     inspector.getApellido(),
                     inspector.getDni(),
-                    inspector.getArea()
+                    inspector.getArea(),
+                    inspector.getFuncion()
             );
         }
 

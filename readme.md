@@ -8,7 +8,7 @@ Este sistema gestiona los usuarios del sistema y los inspectores de diversas ár
 * Spring Security + JWT
 * JPA + Hibernate
 * MySQL
-* Thymeleaf (frontend de superamin, admin)
+* Thymeleaf (dashboards de superamin, admin, página de registro de usuario)
 * Maven
 * Dotenv (configuraciones)
 
@@ -21,9 +21,9 @@ Este sistema gestiona los usuarios del sistema y los inspectores de diversas ár
 
 - JWT_SECRET=tu_clave
 - JWT_EXPIRATION=3600000
-- SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nombre_bd
-- SPRING_DATASOURCE_USERNAME=usuario
-- SPRING_DATASOURCE_PASSWORD=clave
+- SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/nombre_bd
+- SPRING_DATASOURCE_USERNAME=tu_usuario
+- SPRING_DATASOURCE_PASSWORD=tu_clave
 
 ## Instalación
 
@@ -33,11 +33,10 @@ Este sistema gestiona los usuarios del sistema y los inspectores de diversas ár
 
 ## Autenticación
 
-El login se realiza mediante JWT. Para autenticarse:
+El login de usuario se realiza a través de la interfaz en thymeleaf:
 Endpoint: POST /auth/login
+http://localhost:8080/auth/login
 
-* Devuelve un token que debe usarse en los headers:
-Authorization: Bearer {token}
 
 ## Endpoints Principales
 
@@ -50,7 +49,7 @@ Authorization: Bearer {token}
 
 * SUPERADMIN: puede crear admins y CRUD de inspectores
 * ADMIN: solo CRUD de inspectores
-* Inspectores: no pueden loguearse, solo se accede a sus datos vía GET
+* INSPECTORES: no pueden loguearse, solo se accede a sus datos vía GET
 
 ## Inspectores
 
@@ -68,6 +67,7 @@ String nombre;
 String apellido;
 String dni;
 Area area; // Enum
+Funcion funcion; //Enum
 String imagen; // URL o base64
 }
 
@@ -78,6 +78,11 @@ String imagen; // URL o base64
 * HABILITACIONES_Y_PERMISOS
 * FISCALIZACION_Y_CONTROL_OBRAS
 * UCA
+* 
+## Funciones Posibles (Enum Funcion):
+
+* INSPECTOR
+* VERIFICADOR
 
 ## Frontend
 
@@ -85,15 +90,15 @@ El GET de inspectores está abierto para integrarse con cualquier frontend
 
 ## Estructura del Proyecto
 
-inspectores/
-├── enums/
-├── controller/
-├── service/
-├── entity/
-├── dto/
-├── repository/
-├── security/
-└── utils/
+- inspectores/
+- enums/
+- controller/
+- service/
+- entity/
+- dto/
+- repository/
+- security/
+- utils/
 
 ## Seguridad
 

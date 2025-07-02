@@ -35,14 +35,15 @@ Desarrollar una API REST que permita gestionar usuarios e inspectores. La API de
 
 ## Entidad `Inspector`
 
-| Campo     | Tipo    | Detalles                                               |
-|-----------|---------|--------------------------------------------------------|
-| id        | Long    | Autogenerado                                           |
-| nombre    | String  | Obligatorio                                            |
-| apellido  | String  | Obligatorio                                            |
-| dni       | String  | Único, obligatorio                                     |
-| area      | Enum    | Fiscalizacion y control, Seguridad Alimentaria, etc.  |
-| imagen    | String  | URL opcional                                           |
+| Campo    | Tipo    | Detalles                                             |
+|----------|---------|------------------------------------------------------|
+| id       | Long    | Autogenerado                                         |
+| nombre   | String  | Obligatorio                                          |
+| apellido | String  | Obligatorio                                          |
+| dni      | String  | Único, obligatorio                                   |
+| area     | Enum    | Fiscalizacion y control, Seguridad Alimentaria, etc. |
+| funcion  | Enum    | Inspector, Verificador, etc.                         |
+| imagen   | String  | URL opcional                                         |
 
 ## Entidad `User`
 

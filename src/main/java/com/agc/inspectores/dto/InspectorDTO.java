@@ -1,6 +1,7 @@
 package com.agc.inspectores.dto;
 
 import com.agc.inspectores.enums.Area;
+import com.agc.inspectores.enums.Funcion;
 
 public class InspectorDTO {
     private Long id;
@@ -8,6 +9,7 @@ public class InspectorDTO {
     private String apellido;
     private String dni;
     private Area area;
+    private Funcion funcion;
     private String imagen;
 
     //constructor vacio
@@ -17,12 +19,13 @@ public class InspectorDTO {
     //constructor con parametros
 
     public InspectorDTO(Long id, String nombre, String apellido,
-                        String dni, Area area, String imagen) {
+                        String dni, Area area, Funcion funcion, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
         this.area = area;
+        this.funcion = funcion;
         this.imagen = imagen;
     }
 
@@ -66,6 +69,14 @@ public class InspectorDTO {
 
     public void setArea(Area area) {
         this.area = area;
+    }
+
+    public Funcion getFuncion() {
+        return funcion;
+    }
+
+    public void setFuncion(Funcion funcion) {
+        this.funcion = funcion;
     }
 
     public String getImagen() {
