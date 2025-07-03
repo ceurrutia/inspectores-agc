@@ -34,7 +34,11 @@ public class UserService {
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setDni(userDTO.getDni());
-        user.setRole(Role.ADMIN); // ojo, rol ADMIN, no SUPERADMIN
+        if (userDTO.getRole() != null) {
+            user.setRole(userDTO.getRole());
+        } else {
+            user.setRole(Role.ADMIN); // Rol por defecto
+        }// ojo, rol ADMIN, no SUPERADMIN
         user.setEnabled(true);
 
         // Encripta contraseña antes de guardar
@@ -47,7 +51,7 @@ public class UserService {
         dto.setId(savedUser.getId());
         dto.setUsername(savedUser.getUsername());
         dto.setEmail(savedUser.getEmail());
-        dto.setPassword(null);  // adios password
+        dto.setPassword(null);  // se va el pasword, decile adios
         dto.setDni(savedUser.getDni());
         dto.setRole(savedUser.getRole());
         dto.setEnabled(savedUser.isEnabled());
@@ -83,11 +87,14 @@ public class UserService {
             user.setEmail(userDTO.getEmail());
             user.setDni(userDTO.getDni());
             user.setRole(userDTO.getRole());
-            user.setEnabled(userDTO.isEnabled());
+            // user.setEnabled(userDTO.isEnabled());
+            user.setEnabled(true);
 
             // Si viene contraseña y no está vacía, la actualizamos
-            if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            if (userDTO.getPassword() != null && !userDTO.getPassword().trim().isEmpty()) {
+                if (userDTO.getPassword() != null && !userDTO.getPassword().trim().isEmpty()) {
+                    user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+                }
             }
 
             User updatedUser = userRepository.save(user);
