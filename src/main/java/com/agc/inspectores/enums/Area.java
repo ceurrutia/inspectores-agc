@@ -5,9 +5,12 @@ public enum Area {
     SEGURIDAD_ALIMENTARIA("Seguridad Alimentaria"),
     HABILITACIONES_Y_PERMISOS("Habilitaciones y Permisos"),
     FISCALIZACION_Y_CONTROL_DE_OBRAS("Fiscalización y Control de Obras"),
+    LEGAL_Y_TECNICA("Dirección General Legal y Técnica"),
+    UOFI("UOFI"),
+    GOCI("GOCI"),
+    UOPCG("UOPCG"),
     UCA("UCA"),
-    AIP("AIP"),
-    GOEC("Gerencia Operativa Comunicación");
+    AIP("AIP");
 
     private final String label;
 

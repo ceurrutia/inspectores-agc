@@ -17,10 +17,10 @@ public class InspectoresApplication {
         SpringApplication.run(InspectoresApplication.class, args);
 
 //        //Temporal de acceso a superadmin
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String plainPassword = "contraseñaSegura123";
-        String hashedPassword = passwordEncoder.encode(plainPassword);
-        System.out.println("EL HASH DE CONTRASEÑA PARA EL SUPERADMIN ES: " + hashedPassword);
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        String plainPassword = "contraseñaSegura123";
+//        String hashedPassword = passwordEncoder.encode(plainPassword);
+//        System.out.println("EL HASH DE CONTRASEÑA PARA EL SUPERADMIN ES: " + hashedPassword);
 
     }
 }

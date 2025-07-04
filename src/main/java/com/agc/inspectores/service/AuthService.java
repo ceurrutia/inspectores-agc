@@ -27,7 +27,7 @@ public class AuthService {
     private JwtUtils jwtUtils;
 
     public String login(LoginDTO loginDTO) {
-        Optional<User> optionalUser = userRepository.findByUsername(loginDTO.getUsername());
+        Optional<User> optionalUser = userRepository.findByEmail(loginDTO.getUsername());
 
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("Usuario no encontrado");

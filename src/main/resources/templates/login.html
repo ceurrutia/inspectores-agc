@@ -17,7 +17,7 @@
 <main class="d-flex flex-grow-1 justify-content-center align-items-center">
     <div class="col-12 col-md-6 col-lg-4 p-4 shadow-lg rounded bg-white"><h1 class="text-center mb-4 fs-3">Agencia
         Gubernamental de Control - Inspectores</h1>
-        <h2 class="text-center mb-4 fs-4">Login administración</h2>
+        <h2 class="text-center mb-4 fs-4">Inicio de sesión administradores</h2>
 
         <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <span th:switch="${param.error}">
@@ -30,7 +30,7 @@
 
         <form th:action="@{/auth/login}" method="post">
             <div class="mb-3">
-                <label for="username" class="form-label">Usuario (* obligatorio)</label>
+                <label for="username" class="form-label">Email (* obligatorio)</label>
                 <input type="text" class="form-control" id="username" name="username" required/>
             </div>
             <div class="mb-3">
