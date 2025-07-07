@@ -21,9 +21,18 @@ public class InspectorController {
     }
 
     // GET público lista
+
     @GetMapping
-    public ResponseEntity<List<InspectorDTO>> getAll() {
-        return ResponseEntity.ok(inspectorService.getAll());
+    public ResponseEntity<List<InspectorDTO>> getAllOrSearchByApellido(
+            @RequestParam(required = false) String apellido) {
+
+        List<InspectorDTO> inspectores;
+        if (apellido != null && !apellido.trim().isEmpty()) {
+            inspectores = inspectorService.buscarPorApellido(apellido);
+        } else {
+            inspectores = inspectorService.getAll();
+        }
+        return ResponseEntity.ok(inspectores);
     }
 
     //GET público por id de cada

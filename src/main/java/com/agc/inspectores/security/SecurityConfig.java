@@ -12,14 +12,20 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import java.util.Arrays;
 
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
@@ -34,26 +40,17 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Vistas públicas
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-
-                        // Permisos para inspectores
                         .requestMatchers(HttpMethod.GET, "/api/inspectores/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/inspectores/**").hasAnyRole("ADMIN", "SUPERADMIN")
-
-                        // Otros endpoints
-                        .requestMatchers("/api/**").authenticated()
-
-                        // Vistas protegidas por rol
                         .requestMatchers("/admin-dashboard").hasRole("ADMIN")
                         .requestMatchers("/auth/admin/create").authenticated()
-
-                        // Cualquier otra necesita estar autenticado
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                // Habilita formulario solo para vistas web
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .defaultSuccessUrl("/auth/redireccion", true)
@@ -64,14 +61,29 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/auth/login?logout")
                         .permitAll()
                 )
-                //solo las APIs serán stateless
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
-                // JWT se aplica solo si hay token
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5500", "http://127.0.0.1:5500"));
+        config.setAllowCredentials(true);
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        source.registerCorsConfiguration("/api/**", config);
+        return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        return new CorsFilter(corsConfigurationSource());
     }
 
     @Bean
@@ -92,4 +104,3 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-
