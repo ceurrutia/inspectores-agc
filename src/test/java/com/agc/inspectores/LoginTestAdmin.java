@@ -37,12 +37,12 @@ public class LoginTestAdmin {
     void loginWithValidCredentials_shouldGoToDashboard() {
         driver.get("http://localhost:8080/auth/login");
 
-        WebElement usernameInput = driver.findElement(By.name("username"));
+        WebElement emailInput = driver.findElement(By.name("email"));
         WebElement passwordInput = driver.findElement(By.name("password"));
         WebElement loginButton = driver.findElement(By.xpath("//button[@type='submit']"));
 
-        usernameInput.sendKeys("ceciliaurrutia");
-        passwordInput.sendKeys("Cu1040dv%");
+        emailInput.sendKeys("admin44@admin.com");
+        passwordInput.sendKeys("Password2020%");
 
         loginButton.click();
 

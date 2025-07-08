@@ -16,7 +16,7 @@ public class InspectoresApplication {
         );
         SpringApplication.run(InspectoresApplication.class, args);
 
-//        //Temporal de acceso a superadmin
+//        Temporal de acceso a superadmin
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //        String plainPassword = "contraseñaSegura123";
 //        String hashedPassword = passwordEncoder.encode(plainPassword);

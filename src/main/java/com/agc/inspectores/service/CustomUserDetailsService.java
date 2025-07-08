@@ -21,12 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 user.isEnabled(),
-                true,  // accountNonExpired
-                true,  // credentialsNonExpired
-                true,  // accountNonLocked
+                true,  // cuenta no expirada
+                true,  // credencial no expirada
+                true,  // la cuenta no esta bloqueada
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
     }

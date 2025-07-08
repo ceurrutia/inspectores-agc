@@ -36,11 +36,11 @@ public class LoginTestBadCredentialLogin {
     void loginWithValidCredentials_shouldGoToDashboard() {
         driver.get("http://localhost:8080/auth/login");
 
-        WebElement usernameInput = driver.findElement(By.name("username"));
+        WebElement emailInput = driver.findElement(By.name("email"));
         WebElement passwordInput = driver.findElement(By.name("password"));
         WebElement loginButton = driver.findElement(By.xpath("//button[@type='submit']"));
 
-        usernameInput.sendKeys("usuario1");
+        emailInput.sendKeys("usuario22@example.com");
         passwordInput.sendKeys("contraseñaSegura123456");
 
         loginButton.click();
