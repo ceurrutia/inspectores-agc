@@ -1,6 +1,9 @@
 package com.agc.inspectores.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.Arrays;
 
 public enum Area {
     FISCALIZACION_Y_CONTROL("DGFyC"),
@@ -24,4 +27,13 @@ public enum Area {
     public String getLabel() {
         return label;
     }
+
+    @JsonCreator
+    public static Area fromString(String value) {
+        return Arrays.stream(Area.values())
+                .filter(a -> a.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Área inválida: " + value));
+    }
+
 }
