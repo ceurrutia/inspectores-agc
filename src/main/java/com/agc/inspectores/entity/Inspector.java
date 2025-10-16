@@ -23,7 +23,7 @@ public class Inspector {
     @Column(length = 50)
     private Area area;
 
-    private String imagen;
+    private String imagen = "https://png.pngtree.com/png-vector/20221203/ourmid/pngtree-cartoon-style-male-user-profile-icon-vector-illustraton-png-image_6489287.png";
 
     //constructor vacio
     public Inspector() {
@@ -37,7 +37,8 @@ public class Inspector {
         this.dni = dni;
         this.area = area;
         this.funcion = funcion;
-        this.imagen = imagen;
+        this.imagen = (imagen != null && !imagen.isBlank()) ? imagen :
+                "https://png.pngtree.com/png-vector/20221203/ourmid/pngtree-cartoon-style-male-user-profile-icon-vector-illustraton-png-image_6489287.png";
     }
     //construcotr sin id para que lo tome el dto
 
@@ -47,7 +48,8 @@ public class Inspector {
         this.dni = dni;
         this.area = area;
         this.funcion = funcion;
-        this.imagen = imagen;
+        this.imagen = (imagen != null && !imagen.isBlank()) ? imagen :
+                "https://png.pngtree.com/png-vector/20221203/ourmid/pngtree-cartoon-style-male-user-profile-icon-vector-illustraton-png-image_6489287.png";
     }
 
 

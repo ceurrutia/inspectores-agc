@@ -1,5 +1,9 @@
 package com.agc.inspectores.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+import java.util.Arrays;
+
 public enum Funcion {
     INSPECTOR("Inspector/a"),
     VERIFICCADOR("Verificador/a"),
@@ -19,5 +23,13 @@ public enum Funcion {
 
     public String getLabel() {
         return label;
+    }
+
+    @JsonCreator
+    public static Area fromString(String value) {
+        return Arrays.stream(Area.values())
+                .filter(a -> a.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Área inválida: " + value));
     }
 }

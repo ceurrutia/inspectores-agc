@@ -33,6 +33,9 @@ public class InspectorService {
     }
 
     public InspectorDTO save(InspectorDTO dto) {
+        if (dto.getImagen() == null || dto.getImagen().isBlank()) {
+            dto.setImagen("https://png.pngtree.com/png-vector/20221203/ourmid/pngtree-cartoon-style-male-user-profile-icon-vector-illustraton-png-image_6489287.png");
+        }
         Inspector saved = inspectorRepository.save(toEntity(dto));
         return toDTO(saved);
     }
@@ -44,7 +47,14 @@ public class InspectorService {
             inspector.setDni(dto.getDni());
             inspector.setArea(dto.getArea());
             inspector.setFuncion(dto.getFuncion());
-            inspector.setImagen(dto.getImagen());
+
+            if (dto.getImagen() == null || dto.getImagen().isBlank()) {
+                inspector.setImagen(inspector.getImagen() != null
+                        ? inspector.getImagen()
+                        : "https://png.pngtree.com/png-vector/20221203/ourmid/pngtree-cartoon-style-male-user-profile-icon-vector-illustraton-png-image_6489287.png");
+            } else {
+                inspector.setImagen(dto.getImagen());
+            }
             return toDTO(inspectorRepository.save(inspector));
         });
     }
